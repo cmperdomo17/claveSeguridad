@@ -1,9 +1,13 @@
-# ARDUINO
- Arquitectura Computacional Tercer Corte - Ingeniero Fulvio Vivas
+# Clave de Seguridad en Arduino
 
-Integrantes:
-
--Carlos Mario Perdomo Ramos
--Pablo José Restrepo Ruiz
--Fabián Ome Peña
+ ### Arquitectura Computacional Tercer Corte 
  
+ - Ingeniero Fulvio Vivas
+
+## Integrantes:
+
+- [Fabián Ome Peña](https://github.com/Fabian-Ome)
+
+- [Carlos Mario Perdomo Ramos](https://github.com/cmperdomo17)
+
+- [Pablo José Restrepo Ruiz](https://github.com/Pablo736)
