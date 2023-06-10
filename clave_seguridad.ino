@@ -16,10 +16,12 @@ char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, KEYPAD_ROWS, KEYPAD_COLS);
 
 uint64_t value = 0;
-char password[5] = {'1', '2', '3', '4'}; // modificar la contraseña
-char inputPassword[5];
+char password[5] = {'1', '2', '3', '4'}; // Modificar la contraseña
+char inputPassword[5];                   // longitud de la contraseña
 unsigned char idx = 0;
 int aux = 0;
+
+// Definiciones de caracteres personalizados
 
 byte heart[8] = {
     0b00000,
@@ -71,6 +73,15 @@ byte armsUp[8] = {
     0b00100,
     0b01010};
 
+/*
+ Se encarga de inicializar el LCD,
+ crear caracteres personalizados,
+ mostrar un mensaje de bienvenida con
+ caracteres personalizados y establecer
+ la posición inicial del cursor para
+ ingresar la clave.
+*/
+
 void setup()
 {
     lcd.begin(16, 2);
@@ -93,6 +104,15 @@ void setup()
     lcd.setCursor(5, 1);
 }
 
+/*
+ Se encarga de leer las teclas presionadas en
+ el teclado numérico, verificar si se ha
+ ingresado una clave correcta, imprimir
+ mensajes en el LCD y realizar acciones
+ correspondientes en función de las teclas presionadas
+ y bloquear el sistema si hay mas de 3 intentos fallidos.
+*/
+
 void loop()
 {
     char key = keypad.getKey();
@@ -103,30 +123,18 @@ void loop()
         {
             if (isPasswordCorrect())
             {
-                lcd.clear();
-                lcd.print("Clave Correcta!");
-                delay(2000);
-                lcd.clear();
-                reset();
+                print("Clave Correcta!");
+                aux = 0;
             }
             else
             {
-                lcd.clear();
-                lcd.print("Clave Incorrecta!");
+                print("Clave Incorrecta!");
                 aux++;
-                delay(2000);
-                lcd.clear();
-                reset();
-
-                if (aux > 3)
+                if (aux >= 3)
                 {
-                    lcd.clear();
-                    lcd.print("Sistema ");
-                    lcd.setCursor(0, 1);
-                    lcd.print("Bloqueado");
+                    printWithLineBreak("Sistema", "Bloqueado");
                     return;
                 }
-                aux++;
             }
         }
         else
@@ -142,10 +150,35 @@ void loop()
     }
 }
 
+// Imprimir mensaje en el LCD y restablecer
+
+void print(String Message)
+{
+    lcd.clear();
+    lcd.print(Message);
+    delay(2000);
+    lcd.clear();
+    reset();
+}
+
+// Imprimir mensaje con salto de línea en el LCD
+
+void printWithLineBreak(String Message1, String Message2)
+{
+    lcd.clear();
+    lcd.print(Message1);
+    lcd.setCursor(0, 1);
+    lcd.print(Message2);
+}
+
+// Verificar si la contraseña ingresada es correcta
+
 bool isPasswordCorrect()
 {
     return strcmp(inputPassword, password) == 0;
 }
+
+// Restablecer valores y mostrar mensaje en el LCD
 
 void reset()
 {
