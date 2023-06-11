@@ -16,10 +16,11 @@ char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, KEYPAD_ROWS, KEYPAD_COLS);
 
 uint64_t value = 0;
-char password[5] = {'1', '2', '3', '4'}; // Modificar la contraseña
-char inputPassword[5];                   // longitud de la contraseña
+char password[8] = {'1', '2', '3', '4'}; // contraseña: 1234
+char inputPassword[8];
 unsigned char idx = 0;
-int aux = 0;
+int attempts = 0;
+boolean threeAttempts = false;
 
 // Definiciones de caracteres personalizados
 
@@ -101,7 +102,7 @@ void setup()
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Ingrese Clave");
-    lcd.setCursor(5, 1);
+    lcd.setCursor(0, 1);
 }
 
 /*
@@ -117,6 +118,12 @@ void loop()
 {
     char key = keypad.getKey();
 
+    if (attempts >= 3)
+    {
+        printWithLineBreak("Sistema", "Bloqueado");
+        return;
+    }
+
     if (key)
     {
         if (key == '=')
@@ -124,29 +131,26 @@ void loop()
             if (isPasswordCorrect())
             {
                 print("Clave Correcta!");
-                aux = 0;
+                attempts = 0;
+                return;
             }
-            else
-            {
-                print("Clave Incorrecta!");
-                aux++;
-                if (aux >= 3)
-                {
-                    printWithLineBreak("Sistema", "Bloqueado");
-                    return;
-                }
-            }
+
+            print("Clave Incorrecta!");
+            attempts++;
+            return;
         }
-        else
+
+        if (idx >= 8)
         {
-            inputPassword[idx] = key;
-            lcd.print('*');
-            idx++;
-            if (idx >= 5)
-            {
-                idx = 0;
-            }
+            print("Fuera de Rango!");
+            attempts++;
+            return;
         }
+
+        inputPassword[idx] = key;
+        lcd.print('*');
+        idx++;
+        (idx >= 8) ? idx : 0;
     }
 }
 
@@ -169,6 +173,8 @@ void printWithLineBreak(String Message1, String Message2)
     lcd.print(Message1);
     lcd.setCursor(0, 1);
     lcd.print(Message2);
+    delay(10000);
+    lcd.clear();
 }
 
 // Verificar si la contraseña ingresada es correcta
