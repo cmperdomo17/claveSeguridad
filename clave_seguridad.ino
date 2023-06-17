@@ -1,25 +1,44 @@
+// Incluir las bibliotecas necesarias:
 #include <LiquidCrystal.h>
 #include <Keypad.h>
 
-LiquidCrystal lcd(12, 11, 10, 9, 8, 7);
+// Definir el tamaño del teclado
+const byte ROWS = 4;
+const byte COLS = 4;
 
-const byte KEYPAD_ROWS = 4;
-const byte KEYPAD_COLS = 4;
-byte rowPins[KEYPAD_ROWS] = {5, 4, 3, 2};
-byte colPins[KEYPAD_COLS] = {A3, A2, A1, A0};
-char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
-    {'1', '2', '3', '+'},
-    {'4', '5', '6', '-'},
-    {'7', '8', '9', '*'},
-    {'.', '0', '=', '/'}};
+// Definir la disposición de las teclas en el teclado
+char keys[ROWS][COLS] = {
+    {'1', '2', '3', 'A'},
+    {'4', '5', '6', 'B'},
+    {'7', '8', '9', 'C'},
+    {'*', '0', '#', 'D'}};
 
-Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, KEYPAD_ROWS, KEYPAD_COLS);
+// Definir los pines del Arduino conectados a las filas y columnas del teclado
+byte rowPins[ROWS] = {39, 41, 43, 45};
+byte colPins[COLS] = {47, 49, 51, 53};
 
-uint64_t value = 0;
-char password[8] = {'1', '2', '3', '4'}; // contraseña: 1234
+// Crear una instancia de Keypad con los parámetros anteriores
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+// Definir los pines del Arduino conectados a la pantalla LCD
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+
+// Crear una instancia de LiquidCrystal para la pantalla LCD
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+// Contraseña esperada: 1234
+char password[8] = {'1', '2', '3', '4'};
+
+// Contraseña ingresada por el usuario
 char inputPassword[8];
+
+// Índice actual para ingresar la contraseña
 unsigned char idx = 0;
+
+// Número de intentos de contraseña fallidos
 int attempts = 0;
+
+// Bandera para indicar si se han realizado tres intentos fallidos consecutivos
 boolean threeAttempts = false;
 
 // Definiciones de caracteres personalizados
@@ -74,15 +93,9 @@ byte armsUp[8] = {
     0b00100,
     0b01010};
 
-/*
- Se encarga de inicializar el LCD,
- crear caracteres personalizados,
- mostrar un mensaje de bienvenida con
- caracteres personalizados y establecer
- la posición inicial del cursor para
- ingresar la clave.
-*/
-
+/**
+ * Inicializa el LCD, crea caracteres personalizados, muestra un mensaje de bienvenida y establece la posición inicial del cursor para ingresar la clave.
+ */
 void setup()
 {
     lcd.begin(16, 2);
@@ -105,28 +118,21 @@ void setup()
     lcd.setCursor(0, 1);
 }
 
-/*
- Se encarga de leer las teclas presionadas en
- el teclado numérico, verificar si se ha
- ingresado una clave correcta, imprimir
- mensajes en el LCD y realizar acciones
- correspondientes en función de las teclas presionadas
- y bloquear el sistema si hay mas de 3 intentos fallidos.
-*/
-
+/**
+ * Lee las teclas presionadas en el teclado numérico, verifica si se ha ingresado una clave correcta, imprime mensajes en el LCD y realiza acciones correspondientes en función de las teclas presionadas. Bloquea el sistema si hay más de 3 intentos fallidos.
+ */
 void loop()
 {
     char key = keypad.getKey();
-
     if (attempts >= 3)
     {
-        printWithLineBreak("Sistema", "Bloqueado");
-        return;
+        lcd.clear();
+        lcd.print("Siste. Bloqueado");
+        exit(0);
     }
-
     if (key)
     {
-        if (key == '=')
+        if (key == '#')
         {
             if (isPasswordCorrect())
             {
@@ -134,19 +140,15 @@ void loop()
                 attempts = 0;
                 return;
             }
-
             print("Clave Incorrecta!");
             attempts++;
             return;
         }
-
         if (idx >= 8)
         {
             print("Fuera de Rango!");
-            attempts++;
             return;
         }
-
         inputPassword[idx] = key;
         lcd.print('*');
         idx++;
@@ -154,8 +156,11 @@ void loop()
     }
 }
 
-// Imprimir mensaje en el LCD y restablecer
-
+/**
+ * Imprime un mensaje en el LCD y restablece los valores.
+ *
+ * @param Message El mensaje a imprimir en el LCD.
+ */
 void print(String Message)
 {
     lcd.clear();
@@ -165,27 +170,19 @@ void print(String Message)
     reset();
 }
 
-// Imprimir mensaje con salto de línea en el LCD
-
-void printWithLineBreak(String Message1, String Message2)
-{
-    lcd.clear();
-    lcd.print(Message1);
-    lcd.setCursor(0, 1);
-    lcd.print(Message2);
-    delay(10000);
-    lcd.clear();
-}
-
-// Verificar si la contraseña ingresada es correcta
-
+/**
+ * Verifica si la contraseña ingresada es correcta.
+ *
+ * @return true si la contraseña es correcta, false de lo contrario.
+ */
 bool isPasswordCorrect()
 {
     return strcmp(inputPassword, password) == 0;
 }
 
-// Restablecer valores y mostrar mensaje en el LCD
-
+/**
+ * Restablece los valores y muestra un mensaje en el LCD.
+ */
 void reset()
 {
     memset(inputPassword, 0, sizeof(inputPassword));

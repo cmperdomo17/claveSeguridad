@@ -2,7 +2,7 @@
 
 ## Como Ejecutarlo
 
-Ingresar a https://wokwi.com/projects/276825819240727048 e introducir el codigo del archivo  [clave_seguridad.ino](clave_seguridad.ino).
+Ingresar a https://wokwi.com/projects/367741293732278273 para probar el proyecto.
 
 ## Integrantes:
 
