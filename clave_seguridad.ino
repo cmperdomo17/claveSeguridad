@@ -94,7 +94,8 @@ byte armsUp[8] = {
     0b01010};
 
 /**
- * Inicializa el LCD, crea caracteres personalizados, muestra un mensaje de bienvenida y establece la posición inicial del cursor para ingresar la clave.
+ * Inicializa el LCD, crea caracteres personalizados, muestra un mensaje de bienvenida
+ y establece la posición inicial del cursor para ingresar la clave.
  */
 void setup()
 {
@@ -119,7 +120,9 @@ void setup()
 }
 
 /**
- * Lee las teclas presionadas en el teclado numérico, verifica si se ha ingresado una clave correcta, imprime mensajes en el LCD y realiza acciones correspondientes en función de las teclas presionadas. Bloquea el sistema si hay más de 3 intentos fallidos.
+ * Lee las teclas presionadas en el teclado numérico, verifica si se ha ingresado
+ una clave correcta, imprime mensajes en el LCD y realiza acciones correspondientes
+ en función de las teclas presionadas. Bloquea el sistema si hay más de 3 intentos fallidos.
  */
 void loop()
 {
